@@ -1,11 +1,18 @@
+const Job = require("../models/Job");
+const { StatusCodes } = require("http-status-codes");
+
 const getAllJobs = async (req, res) => {
-  res.send("get all jobs");
+  const jobs = await Job.find({ createdBy: req.user.userId }).sort("createdAt");
+  //we have the user object on every request since we have the auth middleware called on every job route
+  res.status(StatusCodes.OK).json({ jobs, count: jobs.length });
 };
 const getJob = async (req, res) => {
   res.send("get single job");
 };
 const createJob = async (req, res) => {
-  res.send(req.user);
+  req.body.createdBy = req.user.userId;
+  const job = await Job.create(req.body);
+  res.status(StatusCodes.OK).json({ job });
 };
 const updateJob = async (req, res) => {
   res.send("register user");
